@@ -1,0 +1,1 @@
+<div class="alert alert-danger">Az oldal nem létezik</div>

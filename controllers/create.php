@@ -1,6 +1,6 @@
 <?php
     //Adatbáziskacsolódás forrásának beemelése
-    require_once 'config/config.php';
+    require_once '../config/config.php';
     /**
      * Külső állományok forrásának beemelése:
      *      include
@@ -121,67 +121,119 @@
      *      
      */
 
-    ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    /**
+     * ADATKÜLDÉS FELDOLGOZÁSA MENTÉSRE PHP OLDALON:
+     */
+    //Az isset fv.-nyel vizsgálom, hogy megjeleni-e a $_POST tömbben az elküldött űrlap valamely name attribútum értéke, pl vezeteknev
+    
+     
+        //Vizsgálom az empty fv.-nyel, hogy a kötelező mezők nem üresen érkeztek meg, azaz a regisztráló kitöltötte
+        
 
-    <!-- jQuery forrás https://jquery.com/ -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        //SQL injekció és XSS támadás védése
+        /**
+         * XSS - HTML, CSS, JavaScript kód érvényesítése az oldalon
+         *      htmlspecialchars() - sztringet tisztítja meg a HTML TAG nyitó és záró
+         *          jelektől (<,>) < = &lt; > = &gt;
+         * 
+         * SQL injekció real_escape_string()
+         *  sztringben lévő határolójeleket (', ", `) védi le: (\', \", \`)
+         */
+        //A checkbox és radio típusú input elmek name attribútum értékei nem kerülnek átadásra, nincs bejelölve a mező az űrlapon
+        $hirlevel = 0;
+            /**
+             * dinamikus változólétrehozás: $$
+             * pl. 
+             * $a = 'alma';
+             * $$a = 'gyümölcs'; //létrejött dinamikusan a $alma változó, melynek tartalma gyümölcs
+             *
+             * Minden input elem name attribútum értékéből egy változót generálunk dinamikusan, 
+             * így már nem kell a $_POST tömbből hívatkozni a küldött adatokra, 
+             * az így kapott változók a megtisztított szöveget tartalmazzák
+             */
+            
 
-    <!-- Bootstrap forrás https://getbootstrap.com/ -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        //jelszavak egyeznek?
+        
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        //felhasználói név és email cím egyediségének vizsgálata az adatbázsiban
+        
+        
+        //A jelszót soha nem plaintext formában tároljuk, mindig HASH algoritmust használjunk
+        
 
-    <!-- DataTables forrás https://datatables.net/ -->
-    <link href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
-    <script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script>
-        //DOM betöltésének várása a script futtatása előtt
-        $(function(){
-            //DataTable inicializálása, magyar fordítással
-            let table = new DataTable('#read-table',{
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/hu.json',
-                }
-            });
-        });
-    </script>
+        //INSERT SQL
+        
 
-    <title>Gyakorlat</title>
-</head>
-<body>
-    <div class="container-fluid">
-    <?php include_once 'elements/menu.php' ?>
-    <!-- AJAX üzenetek konténere -->
-    <div id="ajax-uzenet"></div>
-    <?php 
-        if(isset($_GET['oldal']))
+        //SQL szkript futtatása az SQL szerveren
+
+        if(isset($_POST['vezeteknev']))
         {
-           //vizsgálom az oldal állomány létezését
-           $oldal = 'views/' . $_GET['oldal'] . '.php';
-           if(file_exists($oldal))
-           {
-             //létezik az állomány
-             include($oldal);
-           }
-           else
-           {
-             //nem létező állomány
-             include('views/404error.php');
-           }
+            //kötelező mezők vizsgálata
+
+            if
+            (
+                empty($_POST['email'])          ||
+                empty($_POST['felhasznalonev']) ||
+                empty($_POST['jelszo'])         ||
+                empty($_POST['jelszoujra'])     ||
+                empty($_POST['szuletesiev'])
+            )
+            {
+                print json_encode(["uzenet"=>"Kötelező mezők","class"=>"alert alert-danger"]);
+                return;
+            }
+
+            //XSS, SQL védelem
+            foreach($_POST as $index=>$ertek)
+            {
+                //dinamikus valt. léteehozás $$
+                $$index = htmlspecialchars($mysql->real_escape_string($ertek));
+            }
+
+            //jelszó ellen.
+            if($jelszo != $jelszoujra)
+            {
+                print json_encode(["uzenet"=>"A jelszavak nem egyeznek","class"=>"alert alert-danger"]);
+                return;
+            }
+
+            //email és felhasznalonev egyedisege
+            $sql = "SELECT email FROM users WHERE email='{$email}'";
+
+            $select = $mysql->query($sql);
+            if($select->num_rows)
+            {
+                print json_encode(["uzenet"=>"Email cím foglalt","class"=>"alert alert-danger"]);
+                return;
+            }
+
+            $sql = "SELECT felhasznalonev FROM users WHERE felhasznalonev='{$felhasznalonev}'";
+
+            $select = $mysql->query($sql);
+            if($select->num_rows)
+            {
+                print json_encode(["uzenet"=>"Felhasználónév foglalt","class"=>"alert alert-danger"]);
+                return;
+            }
+
+            //jelszó
+            $jelszo = hash('sha256',$jelszo.$zaj);
+
+            $sql = "INSERT INTO users(vezeteknev,keresztnev,email,felhasznalonev,jelszo,neme,szuletesiev,hirlevel,leiras) VALUES
+                ('{$vezeteknev}','{$keresztnev}','{$email}','{$felhasznalonev}','{$jelszo}','{$neme}','{$szuletesiev}','{$hirlevel}','{$leiras}')";
+            
+            if($mysql->query($sql))
+            {
+                //sikeres insert
+                print json_encode(["uzenet"=>"Sikeres regisztráció","class"=>"alert alert-success"]);
+                return;
+                
+            }
+            else
+            {
+                print $mysql->error;
+            }
         }
-        else
-        {
-           //ha nem létezik a oldal index a get tömbben
-          //inlcude utasítás: forrás állomány importálása
-          include('views/home.php');
-        }
-      ?>
-    </div>
-</body>
-</html>
+        
+?>
