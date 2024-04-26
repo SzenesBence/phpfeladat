@@ -5,9 +5,9 @@
      */
     //Paraméterek felvétele
     $host = "localhost"; //MySql szerver elérhetősége
-    $user = "intgyak2024";
-    $pass = "lT[L3*htjj7v8uTo";
-    $db   = "intgyak2024"; //adatbázis neve, amihez kapcsolódni kívánunk
+    $user = "beadando";
+    $pass = "0pQ(JYVXPgLhrrt.";
+    $db   = "beadando"; //adatbázis neve, amihez kapcsolódni kívánunk
 
     /**
      * kapcsolat hívása, a new operátorral a PHP beépített mysqli osztályából egy objektumot hozunk létre, 
