@@ -51,7 +51,15 @@
     <div class="card-body">
         <form method="POST" id="regform">
             <div class="row">
-
+            <div class class="col-md-2 mb-3">
+        <label for="">Titulus</label>
+        <select name="titulus" id="titulus">
+            <option value="Dr.">Dr.</option>
+             <option value="Prof.">Prof.</option>
+             <option value="Ifj.">Ifj.</option>
+             <option value="Özv.">Özv.</option>
+        </select>
+        </div>
                 <div class="col-md-6 mb-3">
                     <label for="">Vezetéknév</label>
                     <input type="text" name="vezeteknev" class="form-control">
@@ -90,7 +98,6 @@
                     <input type="radio" name="neme" class="form-check-input" value="Nő" id="neme-no">
                     <label for="neme-no" class="form-check-label">Nő</label>
                 </div>
-                
                 <div class="col-md-2 mb-3">
                     <label for="">Születési év*</label>
                     <select name="szuletesiev" id="" class="form-select" required>

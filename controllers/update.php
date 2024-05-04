@@ -1,3 +1,4 @@
+
 <?php 
     require_once '../config/config.php';
 
@@ -56,7 +57,7 @@
                 //jelszó
                 $jelszo = hash('sha256',$jelszo.$zaj);
 
-                $sql = "UPDATE users SET vezeteknev='{$vezeteknev}',keresztnev='{$keresztnev}',email='{$email}',felhasznalonev='{$felhasznalonev}',jelszo='{$jelszo}',neme='{$neme}',szuletesiev='{$szuletesiev}',hirlevel='{$hirlevel}',leiras='{$leiras}' WHERE id='{$user_id}'";
+                $sql = "UPDATE users SET  vezeteknev='{$vezeteknev}',keresztnev='{$keresztnev}',email='{$email}',felhasznalonev='{$felhasznalonev}',jelszo='{$jelszo}',neme='{$neme}',szuletesiev='{$szuletesiev}',hirlevel='{$hirlevel}',leiras='{$leiras}' WHERE id='{$user_id}'";
             }
             else
             {

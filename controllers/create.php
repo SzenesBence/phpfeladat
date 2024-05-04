@@ -220,8 +220,8 @@
             //jelszó
             $jelszo = hash('sha256',$jelszo.$zaj);
 
-            $sql = "INSERT INTO users(vezeteknev,keresztnev,email,felhasznalonev,jelszo,neme,szuletesiev,hirlevel,leiras) VALUES
-                ('{$vezeteknev}','{$keresztnev}','{$email}','{$felhasznalonev}','{$jelszo}','{$neme}','{$szuletesiev}','{$hirlevel}','{$leiras}')";
+            $sql = "INSERT INTO users(titulus,vezeteknev,keresztnev,email,felhasznalonev,jelszo,neme,szuletesiev,hirlevel,leiras) VALUES
+                ('{$titulus}','{$vezeteknev}','{$keresztnev}','{$email}','{$felhasznalonev}','{$jelszo}','{$neme}','{$szuletesiev}','{$hirlevel}','{$leiras}')";
             
             if($mysql->query($sql))
             {
